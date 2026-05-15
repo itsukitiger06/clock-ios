@@ -4,20 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <title>Standby Dashboard</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Inter',sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
 
 html,body{
 width:100%;
@@ -64,20 +57,18 @@ padding:24px;
 border-radius:40px;
 background:rgba(2,6,23,.72);
 backdrop-filter:blur(40px);
-overflow:hidden;
 }
 
 .card{
 background:rgba(255,255,255,0.05);
 border:1px solid rgba(255,255,255,0.08);
-backdrop-filter:blur(20px);
 border-radius:30px;
 padding:28px;
 position:relative;
 overflow:hidden;
 }
 
-/* clock */
+/* CLOCK */
 .clock{
 display:flex;
 flex-direction:column;
@@ -85,36 +76,10 @@ align-items:center;
 justify-content:center;
 }
 
-.analog{
-position:absolute;
-width:700px;
-height:700px;
-border-radius:50%;
-border:2px solid rgba(255,255,255,0.04);
-opacity:.12;
-}
-
-.hand{
-position:absolute;
-bottom:50%;
-left:50%;
-transform-origin:bottom;
-}
-
-.hour{width:10px;height:160px;background:#fff;margin-left:-5px;}
-.minute{width:6px;height:230px;background:#fff;margin-left:-3px;}
-.second{width:2px;height:280px;background:#60a5fa;margin-left:-1px;box-shadow:0 0 20px #60a5fa;}
-
-.center{
-width:18px;height:18px;border-radius:50%;
-background:#fff;
-position:absolute;
-}
-
 .date{
-font-size:24px;
+font-size:22px;
 opacity:.7;
-margin-bottom:20px;
+margin-bottom:18px;
 }
 
 .flip{
@@ -133,29 +98,12 @@ justify-content:center;
 align-items:center;
 font-size:90px;
 font-weight:900;
-transition:.18s;
 }
 
 .sep{font-size:70px;font-weight:900;}
-.sec{font-size:42px;opacity:.7;width:70px;text-align:center;}
+.sec{font-size:40px;opacity:.7;width:70px;text-align:center;}
 
-/* slide */
-.slide{
-position:absolute;
-inset:0;
-padding:28px;
-display:flex;
-flex-direction:column;
-transition:.6s;
-}
-
-.hide{
-opacity:0;
-transform:translateX(40px);
-pointer-events:none;
-}
-
-/* weather */
+/* WEATHER */
 .top{
 display:flex;
 justify-content:space-between;
@@ -163,7 +111,7 @@ align-items:center;
 margin-bottom:20px;
 }
 
-.temp{font-size:72px;font-weight:900;}
+.temp{font-size:70px;font-weight:900;}
 
 .icon svg,
 .small svg{
@@ -175,13 +123,9 @@ stroke-linejoin:round;
 }
 
 .icon svg{width:72px;height:72px;}
-.small svg{width:28px;height:28px;}
+.small svg{width:26px;height:26px;}
 
-.list{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
+.list{display:flex;flex-direction:column;gap:10px;}
 
 .row{
 display:grid;
@@ -203,13 +147,21 @@ opacity:.85;
 .rain svg{
 width:14px;
 height:14px;
+stroke:#fff;
+fill:none;
 }
 
-/* news */
+/* NEWS */
 .news{
 display:flex;
 flex-direction:column;
 gap:12px;
+animation:scroll 120s linear infinite;
+}
+
+@keyframes scroll{
+0%{transform:translateY(0);}
+100%{transform:translateY(-70%);}
 }
 
 .item{
@@ -219,6 +171,10 @@ border-radius:16px;
 font-size:15px;
 line-height:1.5;
 }
+
+/* slide */
+.slide{position:absolute;inset:0;padding:28px;}
+.hide{opacity:0;transform:translateX(40px);pointer-events:none;}
 </style>
 </head>
 
@@ -226,15 +182,8 @@ line-height:1.5;
 
 <div class="dashboard">
 
-<!-- clock -->
+<!-- CLOCK -->
 <div class="card clock">
-
-<div class="analog">
-<div class="hand hour"></div>
-<div class="hand minute"></div>
-<div class="hand second"></div>
-<div class="center"></div>
-</div>
 
 <div class="date" id="date">Loading...</div>
 
@@ -247,7 +196,7 @@ line-height:1.5;
 
 </div>
 
-<!-- right -->
+<!-- RIGHT -->
 <div class="card">
 
 <div id="weather" class="slide">
@@ -259,11 +208,11 @@ line-height:1.5;
 <div class="icon" id="wicon"></div>
 </div>
 
-<div class="list" id="forecast">loading...</div>
+<div class="list" id="forecast"></div>
 </div>
 
 <div id="news" class="slide hide">
-<div class="news" id="newsList">loading...</div>
+<div class="news" id="newsList"></div>
 </div>
 
 </div>
@@ -279,103 +228,100 @@ lat=p.coords.latitude;
 lon=p.coords.longitude;
 });
 
-/* clock */
+/* CLOCK */
 function flip(id,v){
 const el=document.getElementById(id);
 if(el.textContent!==v){
-el.style.transform='rotateX(70deg)';
-setTimeout(()=>{
 el.textContent=v;
-el.style.transform='rotateX(0deg)';
-},120);
 }
 }
 
 function clock(){
 const n=new Date();
-flip('h',String(n.getHours()).padStart(2,'0'));
-flip('m',String(n.getMinutes()).padStart(2,'0'));
-document.getElementById('s').textContent=String(n.getSeconds()).padStart(2,'0');
 
-document.getElementById('date').textContent=
-`${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()}`;
+const week=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-document.querySelector('.second').style.transform=`rotate(${n.getSeconds()*6}deg)`;
-document.querySelector('.minute').style.transform=`rotate(${n.getMinutes()*6}deg)`;
-document.querySelector('.hour').style.transform=`rotate(${(n.getHours()%12)*30+n.getMinutes()*0.5}deg)`;
+document.getElementById("date").textContent=
+`${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()} ${week[n.getDay()]}`;
+
+flip("h",String(n.getHours()).padStart(2,"0"));
+flip("m",String(n.getMinutes()).padStart(2,"0"));
+document.getElementById("s").textContent=String(n.getSeconds()).padStart(2,"0");
 }
 
 setInterval(clock,1000);
 clock();
 
-/* icons */
+/* ICONS */
+function icon(t){
+if(t==="sun"){
+return `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>`;
+}
+return `<svg viewBox="0 0 24 24"><path d="M7 16a4 4 0 1 1 .9-7.9A5 5 0 0 1 17 9a3 3 0 1 1 1 6H7"/></svg>`;
+}
+
 const rainIcon=`
 <svg viewBox="0 0 24 24">
 <path d="M12 2C12 2 5 10 5 14a7 7 0 0 0 14 0c0-4-7-12-7-12z"/>
 </svg>`;
 
-function icon(t){
-if(t==="sun"){
-return `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>`;
-}
-return `<svg viewBox="0 0 24 24"><path d="M7 16a4 4 0 1 1 .9-7.9A5 5 0 0 1 17 9a3 3 0 1 1 1 6H7"/></svg>`;
-}
-
-/* weather */
+/* WEATHER */
 async function weather(){
-const r=await fetch(
+const res=await fetch(
 `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,weathercode&forecast_days=1`
 );
-const d=await r.json();
 
-document.getElementById('temp').textContent=Math.round(d.hourly.temperature_2m[0])+'°';
+const d=await res.json();
 
-let cur='cloud';
-if(d.hourly.weathercode[0]===0)cur='sun';
+document.getElementById("temp").textContent=
+Math.round(d.hourly.temperature_2m[0])+"°";
 
-document.getElementById('wicon').innerHTML=icon(cur);
+document.getElementById("wicon").innerHTML=
+icon(d.hourly.weathercode[0]===0?"sun":"cloud");
 
-let html='';
+let html="";
 for(let i=0;i<24;i+=3){
 const h=new Date(d.hourly.time[i]).getHours();
 
 html+=`
 <div class="row">
 <div>${h}:00</div>
-<div class="small">${icon(d.hourly.weathercode[i]===0?'sun':'cloud')}</div>
+<div class="small">${icon(d.hourly.weathercode[i]===0?"sun":"cloud")}</div>
 <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
 <div class="rain">${rainIcon}${d.hourly.precipitation_probability[i]}%</div>
 </div>`;
 }
 
-document.getElementById('forecast').innerHTML=html;
+document.getElementById("forecast").innerHTML=html;
 }
 
 weather();
 
-/* news */
+/* NEWS */
 async function news(){
-const rss='https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja';
-const api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rss);
+const rss="https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja";
+const api="https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(rss);
 
 const r=await fetch(api);
 const d=await r.json();
 
-document.getElementById('newsList').innerHTML=
-d.items.slice(0,30).map(i=>`<div class="item"><b>${i.title}</b></div>`).join('');
+document.getElementById("newsList").innerHTML=
+d.items.slice(0,30).map(i=>
+`<div class="item"><b>${i.title}</b></div>`
+).join("");
 }
 
 news();
 
-/* slide */
+/* SWITCH */
 let w=true;
 setInterval(()=>{
-document.getElementById('weather').classList.toggle('hide',!w);
-document.getElementById('news').classList.toggle('hide',w);
+document.getElementById("weather").classList.toggle("hide",!w);
+document.getElementById("news").classList.toggle("hide",w);
 w=!w;
 },30000);
 
-/* refresh */
+/* REFRESH */
 setInterval(weather,600000);
 setInterval(news,600000);
 
